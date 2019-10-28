@@ -267,6 +267,7 @@ class MoveFloor extends Handler{
             }
         }
     }
+    //변경 필요
     private void makeFloor(){
         floor = new ImageView(mainActivity);
         floor.setImageResource(R.drawable.floor);
