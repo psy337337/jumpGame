@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                             MoveCharacter.stopCharacter = true;
                             MoveHurdle.stopHurdle = true;
+                            MoveFloor.stopFloor = true;
                         }
                         break;
                 }
@@ -98,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
         bslide.setOnTouchListener(listener);
         bquit.setOnTouchListener(listener);
 
-        new MoveHurdle(screen,this,moveCharacter,hp,point[1]).sendMessageDelayed(new Handler().obtainMessage(1),1000);
+        new MoveHurdle(screen,this,moveCharacter,hp,point[1]).sendMessageDelayed(new Handler().obtainMessage(1),2000);
         new MoveHurdle(screen,this,moveCharacter,hp,point[0]).sendMessageDelayed(new Handler().obtainMessage(1),5000);
         new MoveHurdle(screen,this,moveCharacter,hp,point[1]).sendMessageDelayed(new Handler().obtainMessage(1),8000);
-//        new MoveFloor(screen,this,moveCharacter).sendMessage(new Handler().obtainMessage(1));
-//        new MoveFloor(screen,this,moveCharacter,hp).sendMessageDelayed(new Handler().obtainMessage(1),100);
+        new MoveFloor(screen,this,moveCharacter,hp).sendMessage(new Handler().obtainMessage(1));
+        new MoveFloor(screen,this,moveCharacter,hp).sendMessageDelayed(new Handler().obtainMessage(1),7000);
     }
 }
 //캐릭터 움직이는 클래스
@@ -238,7 +239,7 @@ class MoveFloor extends Handler{
     private MoveCharacter moveCharacter;
     private ImageView floor;
     private MoveHP moveHP;
-    private int forwardDegree = -5;
+    private int forwardDegree = -10;
     public static boolean stopFloor = false;
 
     public MoveFloor(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter, MoveHP moveHP){
@@ -270,10 +271,10 @@ class MoveFloor extends Handler{
     //변경 필요
     private void makeFloor(){
         floor = new ImageView(mainActivity);
-        floor.setImageResource(R.drawable.floor);
-        floor.setX(0);
+        floor.setImageResource(R.drawable.fall);
+        floor.setX(2500);
 //        Log.d("asdf","y좌표 : "+moveCharacter.getCharacter().getY()+moveCharacter.getCharacter().getHeight());
-        floor.setY(570);//수정 필요 베이직은 이 좌표로, 점프 해야할때는 다른 좌표로
+        floor.setY(690);//수정 필요 베이직은 이 좌표로, 점프 해야할때는 다른 좌표로
 
         constraintLayout.addView(floor);
         //이부분도 변수로 변경 필요
@@ -287,8 +288,10 @@ class MoveFloor extends Handler{
     private void fall(){
         Log.d("asdf","floor size : "+floor.getX() + floor.getWidth());
         Log.d("asdf","캐릭터 X : "+(moveCharacter.getCharacter().getX()));
-        if(floor.getX() > moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() ||
-                floor.getX() + floor.getWidth() < moveCharacter.getCharacter().getX()){
+        Log.d("asdf","캐릭터 크기 : "+(moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth()));
+        if(floor.getX() < moveCharacter.getCharacter().getX() + 50 &&
+                floor.getX() + floor.getWidth() > moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -50 &&
+                moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() +40 > floor.getY()){
             moveHP.setHpProgress(0);
             MoveFloor.stopFloor = true;
             Log.d("asdf","낙하");
