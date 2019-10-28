@@ -228,7 +228,6 @@ class MoveHurdle extends Handler{
             moveHP.hitHurdle(1000);
             Log.d("asdf","충돌");
         }
-//            Log.d("asdf","충돌 아님!");
 
     }
 }
