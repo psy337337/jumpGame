@@ -344,25 +344,6 @@ class Score extends Handler{
         score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
         invincibility();
     }
-//    public void hitHurdle(int hp){
-//        if(spendTime == 0) {
-//            if (hpProgress.getProgress() - hp > 0) {
-//                hpProgress.setProgress(hpProgress.getProgress() - hp);
-//                spendTime = 100;
-//            } else {
-//                hpProgress.setProgress(0);
-//                zeroProgress();
-//            }
-//        }
-//    }
-//    private void zeroProgress(){
-//        MoveCharacter.stopCharacter = true;
-//        MoveHurdle.stopHurdle = true;
-//
-//    }
-//    public void setHpProgress(int x){
-//        hpProgress.setProgress(x);
-//    }
 }
 class HP{
     ImageView[][] hp = new ImageView[3][2];
