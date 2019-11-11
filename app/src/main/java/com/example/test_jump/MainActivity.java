@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -104,6 +105,9 @@ public class MainActivity extends AppCompatActivity {
                             MoveCharacter.stopCharacter = true;
                             MoveHurdle.stopHurdle = true;
                             MoveFloor.stopFloor = true;
+
+                            Intent intent = new Intent(MainActivity.this,PauseActivity.class);
+                            startActivity(intent);
                         }
                         break;
                 }
@@ -121,6 +125,13 @@ public class MainActivity extends AppCompatActivity {
         new MoveHurdle(screen,this,moveCharacter,hp,point[1]).sendMessageDelayed(new Handler().obtainMessage(1),8000);
         new MoveFloor(screen,this,moveCharacter,hp).sendMessage(new Handler().obtainMessage(1));
         new MoveFloor(screen,this,moveCharacter,hp).sendMessageDelayed(new Handler().obtainMessage(1),7000);
+
+    }
+
+    public void dieIntent(){
+        Intent dieintent = new Intent(this,ScoreActivity.class);
+        String t=(String) score.getText();
+        dieintent.putExtra("scorein",t);
     }
 }
 //캐릭터 움직이는 클래스
@@ -336,6 +347,7 @@ class Score extends Handler{
         }
 
     }
+
     private void invincibility(){
         if(spendTime != 0)
             spendTime--;
@@ -344,6 +356,7 @@ class Score extends Handler{
         score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
         invincibility();
     }
+
 }
 class HP{
     ImageView[][] hp = new ImageView[3][2];
@@ -384,5 +397,8 @@ class HP{
         MoveCharacter.stopCharacter = true;
         MoveHurdle.stopHurdle = true;
         MoveFloor.stopFloor = true;
+
+        MainActivity.dieIntent();
+
     }
 }
