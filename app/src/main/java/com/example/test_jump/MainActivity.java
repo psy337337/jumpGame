@@ -16,6 +16,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -24,10 +26,14 @@ public class MainActivity extends AppCompatActivity {
     ConstraintLayout screen;
     Button bslide,bjump,bquit;
     ImageView ani;
-    ProgressBar HpProgressBar;
+//    ProgressBar HpProgressBar;
     MoveCharacter moveCharacter;
-    MoveHP hp;
+//    MoveHP hp;
     TextView score;
+    ImageView[] redHP = new ImageView[3];
+    ImageView[] whiteHP = new ImageView[3];
+    HP hp;
+    Score scoreClass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +46,23 @@ public class MainActivity extends AppCompatActivity {
         bquit=findViewById(R.id.bquit);
         ani=findViewById(R.id.imageView);
         screen=findViewById(R.id.screen);
-        HpProgressBar = findViewById(R.id.HPprogressBar);
+//        HpProgressBar = findViewById(R.id.HPprogressBar);
         score = findViewById(R.id.scoreText);
+        redHP[0] = findViewById(R.id.hp1);
+        redHP[1] = findViewById(R.id.hp2);
+        redHP[2] = findViewById(R.id.hp3);
+        whiteHP[0] = findViewById(R.id.whp1);
+        whiteHP[1] = findViewById(R.id.whp2);
+        whiteHP[2] = findViewById(R.id.whp3);
+
+
+
 
         //핸들러 객체 생성
         moveCharacter = new MoveCharacter(ani,bslide,bjump);
-        hp = new MoveHP(HpProgressBar,score);
+//        hp = new MoveHP(HpProgressBar,score);
+        hp = new HP(redHP,whiteHP);
+        scoreClass = new Score(score);
 
         //장애물 좌표 값 저장(장애물 수에 따라 추가할 것)
         int[][] point = {{2500,550},{2500,430}};
@@ -179,14 +196,13 @@ class MoveHurdle extends Handler{
     private MoveCharacter moveCharacter;
     private int forwardDegree = -10;
     public static boolean stopHurdle = false;
-    private MoveHP moveHP;
+    private HP hp;
     //생성자
-    public MoveHurdle(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter,MoveHP moveHP, int[] point){
+    public MoveHurdle(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter,HP hp, int[] point){
         this.constraintLayout = constraintLayout;
         this.mainActivity = mainActivity;
         this.moveCharacter = moveCharacter;
-        this.moveHP = moveHP;
-
+        this.hp = hp;
         makeHurdle(point[0],point[1]);
     }
     @Override
@@ -225,7 +241,7 @@ class MoveHurdle extends Handler{
                 hurdle.getX() + hurdle.getWidth() - 100 > moveCharacter.getCharacter().getX()&&
                 hurdle.getY() < moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() -100 &&
                 hurdle.getY() + hurdle.getHeight() - 100 > moveCharacter.getCharacter().getY()){
-            moveHP.hitHurdle(1000);
+            hp.hitHurdle();
             Log.d("asdf","충돌");
         }
 
@@ -237,15 +253,15 @@ class MoveFloor extends Handler{
     private MainActivity mainActivity;
     private MoveCharacter moveCharacter;
     private ImageView floor;
-    private MoveHP moveHP;
+    private HP hp;
     private int forwardDegree = -10;
     public static boolean stopFloor = false;
 
-    public MoveFloor(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter, MoveHP moveHP){
+    public MoveFloor(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter, HP hp){
         this.constraintLayout = constraintLayout;
         this.mainActivity = mainActivity;
         this.moveCharacter = moveCharacter;
-        this.moveHP = moveHP;
+        this.hp =hp;
 
         makeFloor();
     }
@@ -291,22 +307,18 @@ class MoveFloor extends Handler{
         if(floor.getX() < moveCharacter.getCharacter().getX() + 50 &&
                 floor.getX() + floor.getWidth() > moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -50 &&
                 moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() +40 > floor.getY()){
-            moveHP.setHpProgress(0);
-            MoveFloor.stopFloor = true;
+            hp.fall();
             Log.d("asdf","낙하");
         }
 //            Log.d("asdf","낙하 아님!");
     }
 }
-class MoveHP extends Handler{
-    ProgressBar hpProgress;
+class Score extends Handler{
     TextView score;
-    int spendTime = 0;
+    public static int spendTime = 0;
 
-    public MoveHP(ProgressBar hpProgress, TextView score){
-        this.hpProgress = hpProgress;
+    public Score(TextView score){
         this.score = score;
-        hpProgress.setProgress(hpProgress.getMax());
         this.sendMessageDelayed(this.obtainMessage(1), 1);
     }
     @Override
@@ -315,40 +327,81 @@ class MoveHP extends Handler{
         if(!MoveHurdle.stopHurdle&&!MoveCharacter.stopCharacter){
             switch (msg.what){
                 case 1:
-                    minusHP();
-                    if(hpProgress.getProgress() != 0)
-                        this.sendMessageDelayed(this.obtainMessage(1), 10);
-                    else
-                        zeroProgress();
+                    plusScore();
+                    if(HP.isDie == false)
+                        this.sendMessageDelayed(this.obtainMessage(1), 100);
                     break;
 
             }
         }
 
     }
-    private void minusHP(){
-        hpProgress.setProgress(hpProgress.getProgress()-1);
-        if(hpProgress.getProgress()%10 == 0)
-            score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
+    private void invincibility(){
         if(spendTime != 0)
             spendTime--;
     }
-    public void hitHurdle(int hp){
-        if(spendTime == 0) {
-            if (hpProgress.getProgress() - hp > 0) {
-                hpProgress.setProgress(hpProgress.getProgress() - hp);
-                spendTime = 100;
-            } else {
-                hpProgress.setProgress(0);
-                zeroProgress();
+    private void plusScore(){
+        score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
+        invincibility();
+    }
+//    public void hitHurdle(int hp){
+//        if(spendTime == 0) {
+//            if (hpProgress.getProgress() - hp > 0) {
+//                hpProgress.setProgress(hpProgress.getProgress() - hp);
+//                spendTime = 100;
+//            } else {
+//                hpProgress.setProgress(0);
+//                zeroProgress();
+//            }
+//        }
+//    }
+//    private void zeroProgress(){
+//        MoveCharacter.stopCharacter = true;
+//        MoveHurdle.stopHurdle = true;
+//
+//    }
+//    public void setHpProgress(int x){
+//        hpProgress.setProgress(x);
+//    }
+}
+class HP{
+    ImageView[][] hp = new ImageView[3][2];
+    public static boolean isDie = false;
+    public HP(ImageView[] rhp, ImageView[] whp){
+        for(int i = 0; i < hp.length; i++){
+            hp[i][0] = rhp[i];
+            hp[i][1] = whp[i];
+
+        }
+
+    }
+    public void hitHurdle() {
+        if (Score.spendTime == 0){
+            for (int i = 0; i < hp.length; i++) {
+                if (hp[1][0].getVisibility() == View.INVISIBLE) {
+                    hp[2][0].setVisibility(View.INVISIBLE);
+                    hp[2][1].setVisibility(View.VISIBLE);
+                    stopALL();
+                } else if (hp[i][0].getVisibility() == View.VISIBLE) {
+                    hp[i][0].setVisibility(View.INVISIBLE);
+                    hp[i][1].setVisibility(View.VISIBLE);
+                    Score.spendTime = 10;
+                    break;
+                }
             }
         }
     }
-    private void zeroProgress(){
+    public void fall(){
+        for(int i = 0; i < hp.length; i++){
+            hp[i][0].setVisibility(View.INVISIBLE);
+            hp[i][1].setVisibility(View.VISIBLE);
+        }
+        stopALL();
+    }
+    public void stopALL(){
+        isDie = true;
         MoveCharacter.stopCharacter = true;
         MoveHurdle.stopHurdle = true;
-    }
-    public void setHpProgress(int x){
-        hpProgress.setProgress(x);
+        MoveFloor.stopFloor = true;
     }
 }
