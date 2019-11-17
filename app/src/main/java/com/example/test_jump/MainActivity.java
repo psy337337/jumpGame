@@ -1,7 +1,6 @@
 package com.example.test_jump;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -24,13 +23,17 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+
 import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     ConstraintLayout screen;
     Button bslide,bjump,bquit;
     ImageView ani;
+//    ProgressBar HpProgressBar;
     MoveCharacter moveCharacter;
+//    MoveHP hp;
     TextView score;
     ImageView[] redHP = new ImageView[3];
     ImageView[] whiteHP = new ImageView[3];
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         bquit=findViewById(R.id.bquit);
         ani=findViewById(R.id.imageView);
         screen=findViewById(R.id.screen);
+//        HpProgressBar = findViewById(R.id.HPprogressBar);
         score = findViewById(R.id.scoreText);
         redHP[0] = findViewById(R.id.hp1);
         redHP[1] = findViewById(R.id.hp2);
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         //핸들러 객체 생성
         moveCharacter = new MoveCharacter(ani,bslide,bjump);
 //        hp = new MoveHP(HpProgressBar,score);
-        hp = new HP(redHP,whiteHP);
+        hp = new HP(redHP,whiteHP,this);
         scoreClass = new Score(score);
 
         //장애물 좌표 값 저장(장애물 수에 따라 추가할 것)
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
         bquit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,8 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void dieIntent(){
         Intent dieintent = new Intent(this,ScoreActivity.class);
-        String t=(String) score.getText();
-        dieintent.putExtra("scorein",t);
+        dieintent.putExtra("scorein",Integer.parseInt(score.getText().toString()));
+        startActivity(dieintent);
+        finish();
     }
 }
 //캐릭터 움직이는 클래스
@@ -335,9 +339,9 @@ class MoveFloor extends Handler{
         floor.setX(floor.getX()+forwardDegree);
     }
     private void fall(){
-        Log.d("asdf","floor size : "+floor.getX() + floor.getWidth());
-        Log.d("asdf","캐릭터 X : "+(moveCharacter.getCharacter().getX()));
-        Log.d("asdf","캐릭터 크기 : "+(moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth()));
+//        Log.d("asdf","floor size : "+floor.getX() + floor.getWidth());
+//        Log.d("asdf","캐릭터 X : "+(moveCharacter.getCharacter().getX()));
+//        Log.d("asdf","캐릭터 크기 : "+(moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth()));
         if(floor.getX() < moveCharacter.getCharacter().getX() + 50 &&
                 floor.getX() + floor.getWidth() > moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -50 &&
                 moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() +40 > floor.getY()){
@@ -383,8 +387,10 @@ class Score extends Handler{
 }
 class HP{
     ImageView[][] hp = new ImageView[3][2];
+    private MainActivity main;
     public static boolean isDie = false;
-    public HP(ImageView[] rhp, ImageView[] whp){
+    public HP(ImageView[] rhp, ImageView[] whp,MainActivity main){
+        this.main = main;
         for(int i = 0; i < hp.length; i++){
             hp[i][0] = rhp[i];
             hp[i][1] = whp[i];
@@ -420,8 +426,8 @@ class HP{
         MoveCharacter.stopCharacter = true;
         MoveHurdle.stopHurdle = true;
         MoveFloor.stopFloor = true;
-//
-//        MainActivity.dieIntent();
+
+        main.dieIntent();
 
     }
 }
