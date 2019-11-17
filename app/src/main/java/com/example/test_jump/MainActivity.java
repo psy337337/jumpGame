@@ -1,9 +1,11 @@
 package com.example.test_jump;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -27,9 +30,7 @@ public class MainActivity extends AppCompatActivity {
     ConstraintLayout screen;
     Button bslide,bjump,bquit;
     ImageView ani;
-//    ProgressBar HpProgressBar;
     MoveCharacter moveCharacter;
-//    MoveHP hp;
     TextView score;
     ImageView[] redHP = new ImageView[3];
     ImageView[] whiteHP = new ImageView[3];
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         bquit=findViewById(R.id.bquit);
         ani=findViewById(R.id.imageView);
         screen=findViewById(R.id.screen);
-//        HpProgressBar = findViewById(R.id.HPprogressBar);
         score = findViewById(R.id.scoreText);
         redHP[0] = findViewById(R.id.hp1);
         redHP[1] = findViewById(R.id.hp2);
@@ -100,21 +100,44 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                         }
                         break;
-                    case R.id.bquit:
-                        if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                            MoveCharacter.stopCharacter = true;
-                            MoveHurdle.stopHurdle = true;
-                            MoveFloor.stopFloor = true;
-
-                            Intent intent = new Intent(MainActivity.this,PauseActivity.class);
-                            startActivity(intent);
-                        }
-                        break;
                 }
                 return false;
 
             }
         };
+
+        bquit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MoveCharacter.stopCharacter = true;
+                MoveHurdle.stopHurdle = true;
+                MoveFloor.stopFloor = true;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setItems(R.array.LAN, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String[] items = getResources().getStringArray(R.array.LAN);
+                        Toast.makeText(getApplicationContext(),items[i],Toast.LENGTH_LONG).show();
+                        if(items[i].equals("Continue")){
+                            MoveCharacter.stopCharacter = false;
+                            MoveHurdle.stopHurdle = false;
+                            MoveFloor.stopFloor = false;
+                        }else if(items[i].equals("Game Rules")){
+                            Intent intent = new Intent(MainActivity.this,HowActivity.class);
+                            startActivity(intent);
+                        }else if(items[i].equals("Quit")){
+//                            Intent intent = new Intent(MainActivity.this,StartActivity.class);
+//                            startActivity(intent);
+                            MainActivity.super.onBackPressed();
+                        }
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+        });
         //리스너
         bjump.setOnTouchListener(listener);
         bslide.setOnTouchListener(listener);
@@ -397,8 +420,8 @@ class HP{
         MoveCharacter.stopCharacter = true;
         MoveHurdle.stopHurdle = true;
         MoveFloor.stopFloor = true;
-
-        MainActivity.dieIntent();
+//
+//        MainActivity.dieIntent();
 
     }
 }
