@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Test_jump</string>
+    <string name="title_activity_sub">MainActivity</string>
+
+    <string-array name="LAN">
+        <item>"Continue"</item>
+        <item>"Game Rules"</item>
+        <item>"Quit"</item>
+    </string-array>
 </resources>
