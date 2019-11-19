@@ -31,9 +31,7 @@ public class MainActivity extends AppCompatActivity {
     ConstraintLayout screen;
     Button bslide,bjump,bquit;
     ImageView ani;
-//    ProgressBar HpProgressBar;
     MoveCharacter moveCharacter;
-//    MoveHP hp;
     TextView score;
     ImageView[] redHP = new ImageView[3];
     ImageView[] whiteHP = new ImageView[3];
@@ -51,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         bquit=findViewById(R.id.bquit);
         ani=findViewById(R.id.imageView);
         screen=findViewById(R.id.screen);
-//        HpProgressBar = findViewById(R.id.HPprogressBar);
         score = findViewById(R.id.scoreText);
         redHP[0] = findViewById(R.id.hp1);
         redHP[1] = findViewById(R.id.hp2);
@@ -65,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
         //핸들러 객체 생성
         moveCharacter = new MoveCharacter(ani,bslide,bjump);
-//        hp = new MoveHP(HpProgressBar,score);
         hp = new HP(redHP,whiteHP,this);
         scoreClass = new Score(score);
 
@@ -74,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
         MoveCharacter.stopCharacter = false;
         MoveHurdle.stopHurdle = false;
-        MoveFloor.stopFloor = false;
 
         //터치 이벤트
         View.OnTouchListener listener = new View.OnTouchListener() {
@@ -114,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 MoveCharacter.stopCharacter = true;
                 MoveHurdle.stopHurdle = true;
-                MoveFloor.stopFloor = true;
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setItems(R.array.LAN, new DialogInterface.OnClickListener() {
@@ -125,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                         if(items[i].equals("Continue")){
                             MoveCharacter.stopCharacter = false;
                             MoveHurdle.stopHurdle = false;
-                            MoveFloor.stopFloor = false;
                         }else if(items[i].equals("Game Rules")){
                             Intent intent = new Intent(MainActivity.this,HowActivity.class);
                             startActivity(intent);
@@ -146,11 +139,8 @@ public class MainActivity extends AppCompatActivity {
         bslide.setOnTouchListener(listener);
         bquit.setOnTouchListener(listener);
 
-        new MoveHurdle(screen,this,moveCharacter,hp,point[1]).sendMessageDelayed(new Handler().obtainMessage(1),2000);
-        new MoveHurdle(screen,this,moveCharacter,hp,point[0]).sendMessageDelayed(new Handler().obtainMessage(1),5000);
-        new MoveHurdle(screen,this,moveCharacter,hp,point[1]).sendMessageDelayed(new Handler().obtainMessage(1),8000);
-        new MoveFloor(screen,this,moveCharacter,hp).sendMessage(new Handler().obtainMessage(1));
-        new MoveFloor(screen,this,moveCharacter,hp).sendMessageDelayed(new Handler().obtainMessage(1),7000);
+        new MadeHurdleHandler(screen, this, moveCharacter, hp).sendMessageDelayed(new Handler().obtainMessage(1), 1000);
+
 
     }
 
@@ -159,275 +149,5 @@ public class MainActivity extends AppCompatActivity {
         dieintent.putExtra("scorein",Integer.parseInt(score.getText().toString()));
         startActivity(dieintent);
         finish();
-    }
-}
-//캐릭터 움직이는 클래스
-class MoveCharacter extends Handler{
-    private ImageView character;
-    private Button bslide,bjump;
-    private int jumpDegree = -7;
-    private boolean isSliding = false;
-    public static boolean stopCharacter = false;
-    //생성자
-    public MoveCharacter(ImageView character, Button bslide, Button bjump){
-        this.character = character;
-        this.bslide = bslide;
-        this.bjump = bjump;
-    }
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-        super.handleMessage(msg);
-        if(!stopCharacter) {
-            switch (msg.what) {
-                case 1://case1일때 점프 실행
-                    //점프 메소드 불러옴
-                    jumpCharacter();
-                    if (character.getY() < 437)
-                        this.sendMessageDelayed(this.obtainMessage(1), 1);
-                    else {
-                        jumpDegree = -jumpDegree;
-                        bslide.setEnabled(true);
-                        bjump.setEnabled(true);
-                    }
-                    break;
-                case 2:// 슬라이드일 때
-                    slideCharacter();
-                    break;
-            }
-        }
-    }
-    //점프 메소드
-    private void jumpCharacter(){
-        character.setY(character.getY()+jumpDegree);
-        if(character.getY()<220)
-            jumpDegree = -jumpDegree;
-    }
-    //슬라이드 메소드(이미지 변경)
-    private  void slideCharacter(){
-        if(isSliding) {
-            //크기 변경(기존 높이의 절반)
-            character.getLayoutParams().height = character.getLayoutParams().height/2;
-            character.requestLayout();
-            character.setImageResource(R.drawable.slide);
-        }
-        else {
-            //크기 변경(원상복구)
-            character.getLayoutParams().height = character.getLayoutParams().height*2;
-            character.requestLayout();
-            character.setImageResource(R.drawable.ex);
-        }
-    }
-    //슬라이드 여부 세팅하는 메소드
-    public void setSliding(boolean sliding) {
-        isSliding = sliding;
-    }
-    //이미지 리턴해주는 메소드
-    public ImageView getCharacter() {
-        return character;
-    }
-}
-//장애물 클래스
-class MoveHurdle extends Handler{
-    private ConstraintLayout constraintLayout;
-    private MainActivity mainActivity;
-    private ImageView hurdle;
-    private MoveCharacter moveCharacter;
-    private int forwardDegree = -10;
-    public static boolean stopHurdle = false;
-    private HP hp;
-    //생성자
-    public MoveHurdle(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter,HP hp, int[] point){
-        this.constraintLayout = constraintLayout;
-        this.mainActivity = mainActivity;
-        this.moveCharacter = moveCharacter;
-        this.hp = hp;
-        makeHurdle(point[0],point[1]);
-    }
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-        super.handleMessage(msg);
-        if(!stopHurdle) {
-            switch (msg.what) {
-                case 1://앞으로 가는 장애물 처리
-                    forwardHurdle();
-                    hit();
-                    if (hurdle.getX() < -hurdle.getWidth())
-                        constraintLayout.removeView(hurdle);
-                    else
-                        this.sendMessageDelayed(this.obtainMessage(1), 1);
-                    break;
-
-            }
-        }
-    }
-    //장애물 만드는 메소드
-    private void makeHurdle(int x, int y){
-        hurdle = new ImageView(mainActivity);
-        hurdle.setImageResource(R.drawable.exb);
-        hurdle.setX(x);
-        hurdle.setY(y);
-
-        constraintLayout.addView(hurdle);
-    }
-    //앞으로 가는 메소드
-    private void forwardHurdle(){
-        hurdle.setX(hurdle.getX()+forwardDegree);
-    }
-    //충돌처리 메소드
-    private void hit(){
-        if(hurdle.getX() < moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -100 &&
-                hurdle.getX() + hurdle.getWidth() - 100 > moveCharacter.getCharacter().getX()&&
-                hurdle.getY() < moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() -100 &&
-                hurdle.getY() + hurdle.getHeight() - 100 > moveCharacter.getCharacter().getY()){
-            hp.hitHurdle();
-            Log.d("asdf","충돌");
-        }
-
-    }
-}
-//장애물 클래스랑 합치거나 그걸 상속받는게 더 나을 수도 있겠다,, 나중에 수정할 것!
-class MoveFloor extends Handler{
-    private ConstraintLayout constraintLayout;
-    private MainActivity mainActivity;
-    private MoveCharacter moveCharacter;
-    private ImageView floor;
-    private HP hp;
-    private int forwardDegree = -10;
-    public static boolean stopFloor = false;
-
-    public MoveFloor(ConstraintLayout constraintLayout, MainActivity mainActivity, MoveCharacter moveCharacter, HP hp){
-        this.constraintLayout = constraintLayout;
-        this.mainActivity = mainActivity;
-        this.moveCharacter = moveCharacter;
-        this.hp =hp;
-
-        makeFloor();
-    }
-
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-        super.handleMessage(msg);
-        if(!stopFloor) {
-            switch (msg.what) {
-                case 1:
-                    forwardHurdle();
-                    fall();
-                    if (floor.getX() < -floor.getWidth())
-                        constraintLayout.removeView(floor);
-                    else
-                        this.sendMessageDelayed(this.obtainMessage(1), 1);
-                    break;
-
-            }
-        }
-    }
-    //변경 필요
-    private void makeFloor(){
-        floor = new ImageView(mainActivity);
-        floor.setImageResource(R.drawable.fall);
-        floor.setX(2500);
-//        Log.d("asdf","y좌표 : "+moveCharacter.getCharacter().getY()+moveCharacter.getCharacter().getHeight());
-        floor.setY(690);//수정 필요 베이직은 이 좌표로, 점프 해야할때는 다른 좌표로
-
-        constraintLayout.addView(floor);
-        //이부분도 변수로 변경 필요
-//        floor.getLayoutParams().height = 200;
-//        floor.getLayoutParams().width = 5000;
-//        floor.requestLayout();
-    }
-    private void forwardHurdle(){
-        floor.setX(floor.getX()+forwardDegree);
-    }
-    private void fall(){
-//        Log.d("asdf","floor size : "+floor.getX() + floor.getWidth());
-//        Log.d("asdf","캐릭터 X : "+(moveCharacter.getCharacter().getX()));
-//        Log.d("asdf","캐릭터 크기 : "+(moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth()));
-        if(floor.getX() < moveCharacter.getCharacter().getX() + 50 &&
-                floor.getX() + floor.getWidth() > moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -50 &&
-                moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() +40 > floor.getY()){
-            hp.fall();
-            Log.d("asdf","낙하");
-        }
-//            Log.d("asdf","낙하 아님!");
-    }
-}
-class Score extends Handler{
-    TextView score;
-    public static int spendTime = 0;
-
-    public Score(TextView score){
-        this.score = score;
-        this.sendMessageDelayed(this.obtainMessage(1), 1);
-    }
-    @Override
-    public void handleMessage(@NonNull Message msg) {
-        super.handleMessage(msg);
-        if(!MoveHurdle.stopHurdle&&!MoveCharacter.stopCharacter){
-            switch (msg.what){
-                case 1:
-                    plusScore();
-                    if(HP.isDie == false)
-                        this.sendMessageDelayed(this.obtainMessage(1), 100);
-                    break;
-
-            }
-        }
-
-    }
-
-    private void invincibility(){
-        if(spendTime != 0)
-            spendTime--;
-    }
-    private void plusScore(){
-        score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
-        invincibility();
-    }
-
-}
-class HP{
-    ImageView[][] hp = new ImageView[3][2];
-    private MainActivity main;
-    public static boolean isDie = false;
-    public HP(ImageView[] rhp, ImageView[] whp,MainActivity main){
-        this.main = main;
-        for(int i = 0; i < hp.length; i++){
-            hp[i][0] = rhp[i];
-            hp[i][1] = whp[i];
-
-        }
-
-    }
-    public void hitHurdle() {
-        if (Score.spendTime == 0){
-            for (int i = 0; i < hp.length; i++) {
-                if (hp[1][0].getVisibility() == View.INVISIBLE) {
-                    hp[2][0].setVisibility(View.INVISIBLE);
-                    hp[2][1].setVisibility(View.VISIBLE);
-                    stopALL();
-                } else if (hp[i][0].getVisibility() == View.VISIBLE) {
-                    hp[i][0].setVisibility(View.INVISIBLE);
-                    hp[i][1].setVisibility(View.VISIBLE);
-                    Score.spendTime = 10;
-                    break;
-                }
-            }
-        }
-    }
-    public void fall(){
-        for(int i = 0; i < hp.length; i++){
-            hp[i][0].setVisibility(View.INVISIBLE);
-            hp[i][1].setVisibility(View.VISIBLE);
-        }
-        stopALL();
-    }
-    public void stopALL(){
-        isDie = true;
-        MoveCharacter.stopCharacter = true;
-        MoveHurdle.stopHurdle = true;
-        MoveFloor.stopFloor = true;
-
-        main.dieIntent();
-
     }
 }
