@@ -41,16 +41,22 @@ public class MoveHurdle extends Handler {
                 case 1://앞으로 가는 장애물 처리
                     forwardHurdle(hurdle);
                     hit();
-                    if (hurdle.getX() < -hurdle.getWidth())
+                    if (hurdle.getX() < -hurdle.getWidth()) {
                         constraintLayout.removeView(hurdle);
+                        MadeHurdleHandler.movingHurdles.remove(0);
+                        MadeHurdleHandler.hudlesNumber.remove(0);
+                    }
                     else
                         this.sendMessageDelayed(this.obtainMessage(1), 1);
                     break;
                 case 2:
                     forwardHurdle(floor);
                     fall();
-                    if (floor.getX() < -floor.getWidth())
+                    if (floor.getX() < -floor.getWidth()) {
                         constraintLayout.removeView(floor);
+                        MadeHurdleHandler.movingHurdles.remove(0);
+                        MadeHurdleHandler.hudlesNumber.remove(0);
+                    }
                     else
                         this.sendMessageDelayed(this.obtainMessage(2), 1);
                     break;
@@ -109,5 +115,8 @@ public class MoveHurdle extends Handler {
             hp.fall();
             Log.d("asdf","낙하");
         }
+    }
+    public MoveHurdle getMovingHurdle(){
+        return this;
     }
 }

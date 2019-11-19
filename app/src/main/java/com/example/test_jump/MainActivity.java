@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,10 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class MainActivity extends AppCompatActivity {
     ConstraintLayout screen;
     Button bslide,bjump,bquit;
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView[] whiteHP = new ImageView[3];
     HP hp;
     Score scoreClass;
+    MadeHurdleHandler madeHurdleHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         hp = new HP(redHP,whiteHP,this);
         scoreClass = new Score(score);
 
-        //장애물 좌표 값 저장(장애물 수에 따라 추가할 것)
-        int[][] point = {{2500,550},{2500,430}};
+//        //장애물 좌표 값 저장(장애물 수에 따라 추가할 것)
+//        int[][] point = {{2500,550},{2500,430}};
 
         MoveCharacter.stopCharacter = false;
         MoveHurdle.stopHurdle = false;
@@ -107,8 +113,7 @@ public class MainActivity extends AppCompatActivity {
         bquit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MoveCharacter.stopCharacter = true;
-                MoveHurdle.stopHurdle = true;
+                onPause();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setItems(R.array.LAN, new DialogInterface.OnClickListener() {
@@ -117,8 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         String[] items = getResources().getStringArray(R.array.LAN);
                         Toast.makeText(getApplicationContext(),items[i],Toast.LENGTH_LONG).show();
                         if(items[i].equals("Continue")){
-                            MoveCharacter.stopCharacter = false;
-                            MoveHurdle.stopHurdle = false;
+                            onRestart();
                         }else if(items[i].equals("Game Rules")){
                             Intent intent = new Intent(MainActivity.this,HowActivity.class);
                             startActivity(intent);
@@ -139,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
         bslide.setOnTouchListener(listener);
         bquit.setOnTouchListener(listener);
 
-        new MadeHurdleHandler(screen, this, moveCharacter, hp).sendMessageDelayed(new Handler().obtainMessage(1), 1000);
+        madeHurdleHandler = new MadeHurdleHandler(screen, this, moveCharacter, hp);
+        madeHurdleHandler.sendMessageDelayed(new Handler().obtainMessage(1), 1000);
 
 
     }
@@ -149,5 +154,28 @@ public class MainActivity extends AppCompatActivity {
         dieintent.putExtra("scorein",Integer.parseInt(score.getText().toString()));
         startActivity(dieintent);
         finish();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        setBooleanHandlers(true);
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        setBooleanHandlers(false);
+        ArrayList<MoveHurdle> m = MadeHurdleHandler.movingHurdles;
+        for(int i = 0; i < m.size();i++){
+            m.get(i).sendMessageDelayed(m.get(i).obtainMessage(MadeHurdleHandler.hudlesNumber.get(i)-2), 1);
+        }
+        madeHurdleHandler.sendMessageDelayed(madeHurdleHandler.obtainMessage(1), (2000*m.size()));
+        scoreClass.sendMessageDelayed(scoreClass.obtainMessage(1), 100);
+    }
+    public void setBooleanHandlers(boolean b){
+        MoveCharacter.stopCharacter = b;
+        MoveHurdle.stopHurdle = b;
+        MadeHurdleHandler.stopMaking = b;
     }
 }
