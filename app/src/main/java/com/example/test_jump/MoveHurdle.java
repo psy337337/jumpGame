@@ -22,7 +22,7 @@ public class MoveHurdle extends Handler {
 
     private int forwardDegree = -10;
     public static boolean stopHurdle = false;
-    private int[][] point = {{2500,550},{2500,430},{2500,690}};
+    private int[][] point = {{2500,730},{2500,600},{2500,690}};
     private Random rand = new Random();
 
     //생성자
@@ -51,7 +51,7 @@ public class MoveHurdle extends Handler {
                     break;
                 case 2:
                     forwardHurdle(floor);
-                    fall();
+//                    fall();
                     if (floor.getX() < -floor.getWidth()) {
                         constraintLayout.removeView(floor);
                         MadeHurdleHandler.movingHurdles.remove(0);
@@ -77,7 +77,10 @@ public class MoveHurdle extends Handler {
     //장애물 만드는 메소드
     private void makeHurdle(int x, int y){
         hurdle = new ImageView(mainActivity);
-        hurdle.setImageResource(R.drawable.exb);
+        if(y == point[1][1])
+            hurdle.setImageResource(R.drawable.slidehurdle);
+        else
+            hurdle.setImageResource(R.drawable.hurdle);
         hurdle.setX(x);
         hurdle.setY(y);
 
@@ -100,10 +103,16 @@ public class MoveHurdle extends Handler {
     private void hit(){
         if(hurdle.getX() < moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -100 &&
                 hurdle.getX() + hurdle.getWidth() - 100 > moveCharacter.getCharacter().getX()&&
-                hurdle.getY() < moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight() -100 &&
-                hurdle.getY() + hurdle.getHeight() - 100 > moveCharacter.getCharacter().getY()){
+                hurdle.getY() < moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight()-50&&
+                hurdle.getY() + hurdle.getHeight() - 50 > moveCharacter.getCharacter().getY()&&!moveCharacter.getSliding()){
+            Log.d("asdf","점프 충돌");
             hp.hitHurdle();
-            Log.d("asdf","충돌");
+        }if(hurdle.getX() < moveCharacter.getCharacter().getX() + moveCharacter.getCharacter().getWidth() -100 &&
+                hurdle.getX() + hurdle.getWidth() - 100 > moveCharacter.getCharacter().getX()&&
+                hurdle.getY() < moveCharacter.getCharacter().getY() + moveCharacter.getCharacter().getHeight()-50&&
+                hurdle.getY() + hurdle.getHeight() - 50 > moveCharacter.getCharacter().getY()+(moveCharacter.getCharacter().getHeight()/2)&&moveCharacter.getSliding()){
+            Log.d("asdf","슬라이드 충돌");
+            hp.hitHurdle();
         }
 
     }

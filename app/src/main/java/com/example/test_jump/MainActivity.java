@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         setBooleanHandlers(true);
-
+        moveCharacter.stopAnim();
     }
 
     @Override
@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
         madeHurdleHandler.sendMessageDelayed(madeHurdleHandler.obtainMessage(1), (2000*m.size()));
         scoreClass.sendMessageDelayed(scoreClass.obtainMessage(1), 100);
+        moveCharacter.startAnim();
     }
     public void setBooleanHandlers(boolean b){
         MoveCharacter.stopCharacter = b;
