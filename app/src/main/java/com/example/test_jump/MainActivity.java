@@ -7,12 +7,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -37,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
     Button bslide,bjump,bquit;
     ImageView ani;
     MoveCharacter moveCharacter;
+    MoveBack moveBack;
     TextView score;
+    ImageView back[] = new ImageView[2];
     ImageView[] redHP = new ImageView[3];
     ImageView[] whiteHP = new ImageView[3];
     HP hp;
@@ -62,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         whiteHP[0] = findViewById(R.id.whp1);
         whiteHP[1] = findViewById(R.id.whp2);
         whiteHP[2] = findViewById(R.id.whp3);
+        back[0] = findViewById(R.id.back1);
+        back[1] = findViewById(R.id.back2);
 
 
 
@@ -145,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
 
         madeHurdleHandler = new MadeHurdleHandler(screen, this, moveCharacter, hp);
         madeHurdleHandler.sendMessageDelayed(new Handler().obtainMessage(1), 1000);
+        moveBack = new MoveBack(back,getScreenSize(this).x);
+        moveBack.sendMessageDelayed(new Handler().obtainMessage(1), 1);
 
 
     }
@@ -173,10 +181,18 @@ public class MainActivity extends AppCompatActivity {
         madeHurdleHandler.sendMessageDelayed(madeHurdleHandler.obtainMessage(1), (2000*m.size()));
         scoreClass.sendMessageDelayed(scoreClass.obtainMessage(1), 100);
         moveCharacter.startAnim();
+        moveBack.sendMessageDelayed(moveBack.obtainMessage(1),1);
     }
     public void setBooleanHandlers(boolean b){
         MoveCharacter.stopCharacter = b;
         MoveHurdle.stopHurdle = b;
         MadeHurdleHandler.stopMaking = b;
+        MoveBack.stopBack = b;
+    }
+    public Point getScreenSize(Activity activity) {
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return  size;
     }
 }

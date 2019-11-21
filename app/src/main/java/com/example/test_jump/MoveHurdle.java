@@ -22,7 +22,7 @@ public class MoveHurdle extends Handler {
 
     private int forwardDegree = -10;
     public static boolean stopHurdle = false;
-    private int[][] point = {{2500,730},{2500,600},{2500,690}};
+    private int[][] point = {{2500,730},{2500,600},{2500,850}};
     private Random rand = new Random();
 
     //생성자
@@ -51,7 +51,7 @@ public class MoveHurdle extends Handler {
                     break;
                 case 2:
                     forwardHurdle(floor);
-//                    fall();
+                    fall();
                     if (floor.getX() < -floor.getWidth()) {
                         constraintLayout.removeView(floor);
                         MadeHurdleHandler.movingHurdles.remove(0);
