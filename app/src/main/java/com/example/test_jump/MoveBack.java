@@ -16,11 +16,11 @@ public class MoveBack extends Handler {
     public MoveBack(ImageView[] backs, int maxX){
         this.backs = backs;
         this.maxX = maxX;
-        this.maxX = backs[0].getWidth();
         backs[0].setX(0);
         backs[0].setY(0);
         backs[1].setY(0);
         backs[1].setX(maxX);
+
 
     }
     @Override
@@ -31,6 +31,13 @@ public class MoveBack extends Handler {
                 case 1:
 //                    Log.d("asdf","배경움직이는 중");
                     forwardBack();
+//                    Log.d("aaaa1",backs[0].getX()+" ");
+//                    if(backs[0].getX()+backs[0].getWidth() <= 0)
+//                        restart(0,2);
+//                    else if(backs[1].getX()+backs[1].getWidth() <= 0)
+//                        restart(1,0);
+//                    else if(backs[2].getX()+backs[2].getWidth() <= 0)
+//                        restart(2,1);
                     if(backs[0].getX()+backs[0].getWidth() <= 0)
                         restart(0);
                     else if(backs[1].getX()+backs[1].getWidth() <= 0)

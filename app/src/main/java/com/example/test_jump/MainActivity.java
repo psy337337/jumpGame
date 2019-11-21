@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         //핸들러 객체 생성
         moveCharacter = new MoveCharacter(ani,bslide,bjump);
         hp = new HP(redHP,whiteHP,this);
