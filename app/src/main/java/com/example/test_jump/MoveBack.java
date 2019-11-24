@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 public class MoveBack extends Handler {
     private ImageView[] backs;
     private int maxX;
-    private int forwardDegree = -10;
+    public static int forwardDegree = -10;
     public static boolean stopBack = false;
 
     public MoveBack(ImageView[] backs, int maxX){

@@ -113,7 +113,7 @@ public class MoveCharacter extends Handler {
         s.setOnLoadCompleteListener (new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-                s.play(soundId, 1f, 1f, 0, 0, 1f);
+                s.play(soundId, 0.2f, 0.2f, 0, 0, 1f);
             }
         });
     }

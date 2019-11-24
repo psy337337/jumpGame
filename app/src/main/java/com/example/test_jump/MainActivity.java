@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         MoveCharacter.stopCharacter = false;
         MoveHurdle.stopHurdle = false;
 
-        final MediaPlayer m = MediaPlayer.create(this, R.raw.bgmogg);
+        final MediaPlayer m = MediaPlayer.create(this, R.raw.bgm);
 ////        final boolean mplay = true;
         m.setLooping(true);
         m.start();

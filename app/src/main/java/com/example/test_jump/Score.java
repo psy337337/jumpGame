@@ -21,6 +21,7 @@ public class Score extends Handler {
             switch (msg.what){
                 case 1:
                     plusScore();
+                    speedUp();
                     if(HP.isDie == false)
                         this.sendMessageDelayed(this.obtainMessage(1), 100);
                     break;
@@ -38,5 +39,10 @@ public class Score extends Handler {
         score.setText(String.valueOf(Integer.parseInt(score.getText().toString()) + 1));
         invincibility();
     }
-
+    private void speedUp(){
+        if(Integer.parseInt(score.getText().toString())/50 > 1){
+            MoveHurdle.forwardDegree = -10-Integer.parseInt(score.getText().toString())/50;
+            MoveBack.forwardDegree = -10-Integer.parseInt(score.getText().toString())/50;
+        }
+    }
 }
