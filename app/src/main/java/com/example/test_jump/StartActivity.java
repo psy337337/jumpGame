@@ -18,14 +18,18 @@ public class StartActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_start);
 
+//        startService(new Intent("com.StartActivity.service.test"));
+
         Button game=findViewById(R.id.bgame);
         Button how = findViewById(R.id.bex);
 
         game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade, R.anim.hold);
                 finish();
             }
         });
@@ -36,6 +40,7 @@ public class StartActivity extends AppCompatActivity {
                 Intent intent = new Intent(StartActivity.this, HowActivity.class);
                 intent.putExtra("ActivityNumber",0);
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade, R.anim.hold);
                 finish();
             }
         });
@@ -54,6 +59,7 @@ public class StartActivity extends AppCompatActivity {
                 pressedTime = 0 ;
             }
             else {
+//                stopService(new Intent("com.StartActivity.service.test"));
                 super.onBackPressed();
 //                finish(); // app 종료 시키기
             }

@@ -86,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
         MoveCharacter.stopCharacter = false;
         MoveHurdle.stopHurdle = false;
 
-        final MediaPlayer m = MediaPlayer.create(this, R.raw.bgm);
-//        final boolean mplay = true;
+        final MediaPlayer m = MediaPlayer.create(this, R.raw.bgmogg);
+////        final boolean mplay = true;
+        m.setLooping(true);
         m.start();
 
         //터치 이벤트
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                             bslide.setEnabled(false);
                             bjump.setEnabled(false);
+                            MoveCharacter.jumpSoundPlay = true;
                             moveCharacter.sendMessageDelayed(moveCharacter.obtainMessage(1), 10);
                         }
                         break;
@@ -129,11 +131,12 @@ public class MainActivity extends AppCompatActivity {
                 onPause();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setCancelable(false);
                 builder.setItems(R.array.LAN, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String[] items = getResources().getStringArray(R.array.LAN);
-                        Toast.makeText(getApplicationContext(),items[i],Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(),items[i],Toast.LENGTH_LONG).show();
                         if(items[i].equals("Continue")){
                             onRestart();
                         }else if(items[i].equals("Game Rules")){
@@ -192,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < m.size();i++){
             m.get(i).sendMessageDelayed(m.get(i).obtainMessage(MadeHurdleHandler.hudlesNumber.get(i)-2), 1);
         }
+        moveCharacter.compulsionJumpDel();
         madeHurdleHandler.sendMessageDelayed(madeHurdleHandler.obtainMessage(1), (2000*m.size()));
         scoreClass.sendMessageDelayed(scoreClass.obtainMessage(1), 100);
         moveCharacter.startAnim();

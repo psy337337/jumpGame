@@ -26,6 +26,12 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="landscape" />
+        <!--<service android:name=".MusicService">-->
+            <!--<intent-filter>﻿-->
+                <!--<action android:name="com.StartActivity.service.test" />-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+            <!--</intent-filter>-->
+        <!--</service>-->
     </application>
 
 </manifest>

@@ -23,11 +23,11 @@ import io.realm.Sort;
 import io.realm.exceptions.RealmMigrationNeededException;
 
 public class ScoreActivity extends AppCompatActivity {
-    long pressedTime = 0;
     Realm realm;
     EditText nameEdit;
     TextView tvscore;
     Intent intent,goStart;
+    Button okButton;
     int score;
     ListView listView;
     Boolean isRanking = false;
@@ -43,13 +43,13 @@ public class ScoreActivity extends AppCompatActivity {
         listView = findViewById(R.id.list);
         nameEdit = findViewById(R.id.textViewedit);
         tvscore = findViewById(R.id.textViewScore);
-        Button okButton = findViewById(R.id.button);
+        okButton = findViewById(R.id.button);
         intent = new Intent(this.getIntent());
         score = intent.getIntExtra("scorein",1);
 
 
-
-        tvscore.setText(Integer.toString(score));
+        tvscore.setText("최종 점수 : "+score+"\n\n아쉽게도 랭킹에 들지 못하였습니다:(");
+        setBooleanEditText(false);
 
         scoreList = new ArrayList<>();
 
@@ -72,12 +72,12 @@ public class ScoreActivity extends AppCompatActivity {
         results = results.sort("score", Sort.DESCENDING);
 
         if(results.isEmpty()||results.size() < 15) {
-            isRanking = true;
+            settingRanking();
         }
         for(SaveScores a : results){
             scoreList.add(new ListViewScores(a.getName(),a.getScore()));
             if(a.getScore() <= score) {
-                isRanking = true;
+                settingRanking();
             }
         }
         listAdapter = new ListAdapter(scoreList);
@@ -92,7 +92,6 @@ public class ScoreActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(view.getId() == R.id.button&&isRanking){
-                    Log.d("asdf","버튼 작동");
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
                         public void execute(Realm realm) {
@@ -102,6 +101,10 @@ public class ScoreActivity extends AppCompatActivity {
                             //입력한 값을 이 클래스에 저장
                             saveScores.setName(nameEdit.getText().toString());
                             saveScores.setScore(score);
+
+                            tvscore.setText("최종 점수 : "+score+"\n\n감사합니다. 랭킹에 반영했습니다!XD");
+                            nameEdit.setText("");
+                            setBooleanEditText(false);
 
                             results = realm.where(SaveScores.class).findAll();
                             results = results.sort("score", Sort.DESCENDING);
@@ -114,7 +117,7 @@ public class ScoreActivity extends AppCompatActivity {
                     });
                     scoreList.clear();
                     for(SaveScores a : results){
-//                        ListViewScores listViewScores = ;
+//                        ListViewScores listViewScores =
                         scoreList.add(new ListViewScores(a.getName(),a.getScore()));
 //                        setTxt(a.getName()+"\n");
                     }
@@ -138,23 +141,20 @@ public class ScoreActivity extends AppCompatActivity {
     public void quitClick(View view) {
         finishActivity();
     }
+
     public void onBackPressed(){
-//        if ( pressedTime == 0 ) {
-//            Toast.makeText(ScoreActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
-//            pressedTime = System.currentTimeMillis();
-//        }
-//        else {
-//            int seconds = (int) (System.currentTimeMillis() - pressedTime);
-//
-//            if ( seconds > 2000 ) {
-//                Toast.makeText(ScoreActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
-//                pressedTime = 0 ;
-//            }
-//            else {
-//                super.onBackPressed();
-////                finish(); // app 종료 시키기
-//            }
-//        }
         finishActivity();
+    }
+    public void settingRanking(){
+        isRanking = true;
+        setBooleanEditText(true);
+        tvscore.setText("최종 점수 : "+score+"\n\n축하합니다! 랭킹에 들었습니다. 아래를 클릭하여 닉네임을 입력해주세요:)");
+    }
+    public void setBooleanEditText(boolean b) {
+        nameEdit.setEnabled(b);
+        nameEdit.setFocusable(b);
+        nameEdit.setClickable(b);
+        nameEdit.setFocusableInTouchMode(b);
+        okButton.setEnabled(b);
     }
 }

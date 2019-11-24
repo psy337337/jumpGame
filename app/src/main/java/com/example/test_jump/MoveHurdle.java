@@ -22,7 +22,7 @@ public class MoveHurdle extends Handler {
 
     private int forwardDegree = -10;
     public static boolean stopHurdle = false;
-    private int[][] point = {{2500,730},{2500,600},{2500,850}};
+    private int[][] point = {{2500,730},{2500,600},{2500,860}};
     private Random rand = new Random();
 
     //생성자
