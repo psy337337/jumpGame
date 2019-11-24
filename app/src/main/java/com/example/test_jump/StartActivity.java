@@ -7,9 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class StartActivity extends AppCompatActivity {
-
+    long pressedTime = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +26,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -32,12 +34,29 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(StartActivity.this, HowActivity.class);
+                intent.putExtra("ActivityNumber",0);
                 startActivity(intent);
+                finish();
             }
         });
     }
 
-    public void onBackPress(){
-        super.onBackPressed();
+    public void onBackPressed(){
+        if ( pressedTime == 0 ) {
+            Toast.makeText(StartActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
+            pressedTime = System.currentTimeMillis();
+        }
+        else {
+            int seconds = (int) (System.currentTimeMillis() - pressedTime);
+
+            if ( seconds > 2000 ) {
+                Toast.makeText(StartActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
+                pressedTime = 0 ;
+            }
+            else {
+                super.onBackPressed();
+//                finish(); // app 종료 시키기
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 
 import org.w3c.dom.Text;
 
@@ -35,6 +37,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class MainActivity extends AppCompatActivity {
+    long pressedTime = 0;
     ConstraintLayout screen;
     Button bslide,bjump,bquit;
     ImageView ani;
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     HP hp;
     Score scoreClass;
     MadeHurdleHandler madeHurdleHandler;
+    public static Activity activity;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         back[0] = findViewById(R.id.back1);
         back[1] = findViewById(R.id.back2);
 
-
+        activity = MainActivity.this;
 
         //핸들러 객체 생성
         moveCharacter = new MoveCharacter(ani,bslide,bjump);
@@ -81,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
 
         MoveCharacter.stopCharacter = false;
         MoveHurdle.stopHurdle = false;
+
+        final MediaPlayer m = MediaPlayer.create(this, R.raw.bgm);
+//        final boolean mplay = true;
+        m.start();
 
         //터치 이벤트
         View.OnTouchListener listener = new View.OnTouchListener() {
@@ -130,12 +138,19 @@ public class MainActivity extends AppCompatActivity {
                             onRestart();
                         }else if(items[i].equals("Game Rules")){
                             Intent intent = new Intent(MainActivity.this,HowActivity.class);
+                            intent.putExtra("ActivityNumber",2);
+
                             startActivity(intent);
-                        }else if(items[i].equals("Quit")){
+                        }else if(items[i].equals("Quit")) {
 //                            Intent intent = new Intent(MainActivity.this,StartActivity.class);
 //                            startActivity(intent);
-                            MainActivity.super.onBackPressed();
+//                            MainActivity.super.onBackPressed();
+                            Intent goStart = new Intent(MainActivity.this,StartActivity.class);
+                            startActivity(goStart);
+                            //        ActivityCompat.finishAffinity(this);
+                            System.exit(0);//이거로 하면 깔끔하게 다 지울 수 있는데 문제는 끝내는데까지 시간이 조금 걸림
                         }
+
                     }
                 });
 
@@ -160,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         Intent dieintent = new Intent(this,ScoreActivity.class);
         dieintent.putExtra("scorein",Integer.parseInt(score.getText().toString()));
         startActivity(dieintent);
-        finish();
+        System.exit(0);
     }
     @Override
     protected void onPause() {
@@ -193,5 +208,29 @@ public class MainActivity extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
         return  size;
+    }
+    @Override
+    public void onBackPressed(){
+        if ( pressedTime == 0 ) {
+            Toast.makeText(MainActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
+            pressedTime = System.currentTimeMillis();
+        }
+        else {
+            int seconds = (int) (System.currentTimeMillis() - pressedTime);
+
+            if ( seconds > 2000 ) {
+                Toast.makeText(MainActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
+                pressedTime = 0 ;
+            }
+            else {
+                super.onBackPressed();
+                System.exit(0);
+//                finish(); // app 종료 시키기
+            }
+        }
+//        super.onBackPressed();
+
+
+
     }
 }

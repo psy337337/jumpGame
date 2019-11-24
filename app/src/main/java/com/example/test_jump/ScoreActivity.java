@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -22,10 +23,11 @@ import io.realm.Sort;
 import io.realm.exceptions.RealmMigrationNeededException;
 
 public class ScoreActivity extends AppCompatActivity {
+    long pressedTime = 0;
     Realm realm;
     EditText nameEdit;
     TextView tvscore;
-    Intent intent;
+    Intent intent,goStart;
     int score;
     ListView listView;
     Boolean isRanking = false;
@@ -69,7 +71,7 @@ public class ScoreActivity extends AppCompatActivity {
         results = realm.where(SaveScores.class).findAll();
         results = results.sort("score", Sort.DESCENDING);
 
-        if(results.isEmpty()||results.size() < 10) {
+        if(results.isEmpty()||results.size() < 15) {
             isRanking = true;
         }
         for(SaveScores a : results){
@@ -104,7 +106,7 @@ public class ScoreActivity extends AppCompatActivity {
                             results = realm.where(SaveScores.class).findAll();
                             results = results.sort("score", Sort.DESCENDING);
 
-                            if(results.size() > 10){
+                            if(results.size() > 15){
                                 results.deleteLastFromRealm();
                             }
 
@@ -119,13 +121,40 @@ public class ScoreActivity extends AppCompatActivity {
                     listAdapter.notifyDataSetChanged();
                     isRanking = false;
                 }
+                else if(view.getId() == R.id.quitButton){
+                    finishActivity();
+                }
             }
         };
         okButton.setOnClickListener(listener);
         listView.setAdapter(listAdapter);
 
     }
-//    public void setTxt(String str){
-//        tvscore.setText(tvscore.getText()+str);
-//    }
+    public void finishActivity(){
+        goStart = new Intent(ScoreActivity.this,StartActivity.class);
+        startActivity(goStart);
+        finish();
+    }
+    public void quitClick(View view) {
+        finishActivity();
+    }
+    public void onBackPressed(){
+//        if ( pressedTime == 0 ) {
+//            Toast.makeText(ScoreActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
+//            pressedTime = System.currentTimeMillis();
+//        }
+//        else {
+//            int seconds = (int) (System.currentTimeMillis() - pressedTime);
+//
+//            if ( seconds > 2000 ) {
+//                Toast.makeText(ScoreActivity.this, " 한 번 더 누르면 종료됩니다." , Toast.LENGTH_LONG).show();
+//                pressedTime = 0 ;
+//            }
+//            else {
+//                super.onBackPressed();
+////                finish(); // app 종료 시키기
+//            }
+//        }
+        finishActivity();
+    }
 }

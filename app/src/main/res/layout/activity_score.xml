@@ -17,9 +17,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:fontFamily="@font/pixelfont"
-        android:text="Congratulation!"
-        android:textSize="36sp"
         android:gravity="center"
+        android:text="Game Over"
+        android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.2"
         app:layout_constraintHorizontal_bias="0.0"
@@ -28,14 +28,12 @@
 
     <ScrollView
         android:id="@+id/scroll"
-        android:layout_width="441dp"
-        android:layout_height="276dp"
+        android:layout_width="439dp"
+        android:layout_height="208dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginBottom="19dp"
+        android:layout_marginTop="24dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview">
 
@@ -43,21 +41,22 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-             />
+            android:dividerHeight="4dp"
+            android:divider="#00000000"/>
     </ScrollView>
 
     <TextView
         android:id="@+id/textViewScore"
-        android:layout_width="209dp"
-        android:layout_height="46dp"
+        android:layout_width="196dp"
+        android:layout_height="83dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="64dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:fontFamily="@font/pixelfont"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintHorizontal_bias="0.468"
         app:layout_constraintStart_toEndOf="@+id/scroll"
         app:layout_constraintTop_toBottomOf="@+id/textview" />
 
@@ -67,29 +66,40 @@
         android:layout_height="57dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:fontFamily="@font/pixelfont"
-        app:layout_constraintHorizontal_bias="0.218"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.267"
         app:layout_constraintStart_toEndOf="@+id/scroll"
-        app:layout_constraintTop_toBottomOf="@+id/textViewScore"
-        app:layout_constraintVertical_bias="0.384" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewScore" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="59dp"
         android:layout_height="62dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="35dp"
         android:layout_marginRight="35dp"
-        android:layout_marginBottom="88dp"
-        android:text="확인"
         android:fontFamily="@font/pixelfont"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="확인"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewedit" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textViewedit"
+        app:layout_constraintTop_toBottomOf="@+id/textViewScore" />
+
+    <Button
+        android:id="@+id/quitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:onClick="quitClick"
+        android:text="Button"
+        app:layout_constraintEnd_toEndOf="@+id/textview"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
